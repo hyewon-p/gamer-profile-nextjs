@@ -1,0 +1,31 @@
+import { GetServerSideProps } from "next";
+import { getCookieParser } from "next/dist/server/api-utils";
+import Link from "next/link";
+import React from "react";
+import axios from "axios";
+import { useRouter } from "next/router";
+
+interface LayoutProps {
+  children: React.ReactNode;
+  isUser: boolean;
+}
+
+const Layout: React.FC<LayoutProps> = ({ isUser, children }) => {
+  console.log(isUser);
+
+  return (
+    <div className="w-full flex flex-col items-center bg-black min-h-screen text-white">
+      <header className="flex justify-between w-4/6 py-3">
+        <div></div>
+        {!isUser && (
+          <Link href={"/steam/login"}>
+            <div className="cursor-pointer">로그인</div>
+          </Link>
+        )}
+      </header>
+      <div className="w-4/6 pb-8">{children}</div>
+    </div>
+  );
+};
+
+export default Layout;
