@@ -9,23 +9,17 @@ module.exports = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  env: {
+    API_URL: process.env.API_URL,
+    BASE_URL: process.env.BASE_URL,
+  },
 
   async rewrites() {
-    console.log(process.env.NODE_ENV);
-    if (process.env.NODE_ENV !== "production") {
-      return [
-        {
-          source: process.env.SOURCE_PATH,
-          destination: process.env.DESTINATION_URL,
-        },
-      ];
-    } else {
-      return [
-        {
-          source: process.env.SOURCE_PATH,
-          destination: process.env.DESTINATION_URL,
-        },
-      ];
-    }
+    return [
+      {
+        source: process.env.SOURCE_PATH,
+        destination: process.env.DESTINATION_URL,
+      },
+    ];
   },
 };

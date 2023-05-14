@@ -12,6 +12,8 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ isUser, children }) => {
   console.log(isUser);
+  axios.defaults.withCredentials = true;
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   return (
     <div className="w-full flex flex-col items-center bg-black min-h-screen text-white">

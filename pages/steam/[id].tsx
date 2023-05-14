@@ -11,6 +11,8 @@ import Favorite from "../../components/Favorite";
 import Modal from "../../components/Modal";
 import { RecoilState, useRecoilState } from "recoil";
 import { isOwnerValue } from "../../store/user.store";
+import * as fs from "fs";
+import * as https from "https";
 
 axios.defaults.withCredentials = true;
 
@@ -44,9 +46,14 @@ interface steamData {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const token = getCookie("Auth", context);
+  // const httpsAgent = new https.Agent({
+  //   rejectUnauthorized: false,
+  // });
+  const token = getCookie("Authorization", context);
   axios.defaults.headers.common["Authorization"] = token;
   const { id } = context.query;
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
   try {
     const fetchedData = await axios.post(
       `${process.env.API_URL}/steam/profile/${id}`
@@ -67,27 +74,30 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } catch (error) {
-    console.log(error);
     return {
-      props: {},
-
-      // redirect: {
-      //   destination: "/steam/login",
-      //   permanent: false,
-      // },
+      props: {
+        redirect: {
+          destination: "/steam/login",
+          permanent: false,
+        },
+      },
     };
   }
 };
 const ProfilePage: NextPage<steamData> = ({ appList, profile }) => {
+  // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   const router = useRouter();
+  const token = getCookie("Auth");
   const { id } = router.query;
-  const user = getCookie("User");
+
+  console.log(profile, token);
+
   const [desc, setDesc] = useState(profile.description);
   const [descMod, setDescMod] = useState();
   const [isOwner, setIsOwner] = useRecoilState(isOwnerValue);
 
   useEffect(() => {
-    setIsOwner(id == user);
+    setIsOwner(id == profile.id);
   }, []);
 
   const saveDesc = async () => {
