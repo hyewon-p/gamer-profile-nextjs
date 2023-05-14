@@ -49,13 +49,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // const httpsAgent = new https.Agent({
   //   rejectUnauthorized: false,
   // });
-  const cookie = context.req.headers.cookie;
-  const token = cookieStringToObject(cookie);
+  const token = getCookie("Authorization", context);
+  // const token = cookieStringToObject(cookie);
 
-  const { Authorization, User } = token;
+  // const { Authorization, User } = token;
 
-  axios.defaults.headers.common["Authorization"] =
-    "Bearer " + Authorization.split("%")[1].slice(2);
+  axios.defaults.headers.common["Authorization"] = token;
 
   const { id } = context.query;
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -79,7 +78,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
         appList: libraryData.data,
 
-        token: Authorization.split("%")[1].slice(2),
+        token: token,
       },
     };
   } catch (error) {
@@ -97,6 +96,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
   const setTokenValue = useSetRecoilState(tokenValue);
   setTokenValue(token ? token : "");
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  console.log(token);
   const router = useRouter();
 
   const { id } = router.query;
@@ -113,7 +113,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
     if (desc != profile.description) {
       const token = getCookie("Auth");
       axios.defaults.headers.common["Authorization"] = token;
-      const update = await axios.post("/api/user/desc", {
+      const update = await axios.post("/API/user/desc", {
         desc: desc,
       });
       update.status !== 201 && console.error(update.status);
