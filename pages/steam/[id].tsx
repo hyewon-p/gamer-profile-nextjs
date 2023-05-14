@@ -9,8 +9,8 @@ import Trait from "../../components/Trait";
 import { useRouter } from "next/router";
 import Favorite from "../../components/Favorite";
 import Modal from "../../components/Modal";
-import { RecoilState, useRecoilState } from "recoil";
-import { isOwnerValue } from "../../store/user.store";
+import { RecoilState, useRecoilState, useSetRecoilState } from "recoil";
+import { isOwnerValue, tokenValue, userID } from "../../store/user.store";
 import * as fs from "fs";
 import * as https from "https";
 
@@ -43,6 +43,7 @@ interface steamData {
     url: string;
     description: string;
   };
+  token: string;
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -51,6 +52,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // });
   const token = getCookie("Authorization", context);
   axios.defaults.headers.common["Authorization"] = token;
+
   const { id } = context.query;
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -71,6 +73,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           image: resData.profile.avatar.large,
         },
         appList: libraryData.data,
+        token: token,
       },
     };
   } catch (error) {
@@ -84,10 +87,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 };
-const ProfilePage: NextPage<steamData> = ({ appList, profile }) => {
-  // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
+  const setTokenValue = useSetRecoilState(tokenValue);
+  setTokenValue(token ? token : "");
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   const router = useRouter();
-  const token = getCookie("Auth");
+  // const token = getCookie("Auth");
   const { id } = router.query;
 
   console.log(profile, token);

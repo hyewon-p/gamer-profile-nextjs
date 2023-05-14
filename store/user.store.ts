@@ -16,6 +16,10 @@ export const userID = atom<string>({
   effects: [sessionStorageEffect("User")],
 });
 
+export const tokenValue = atom<string>({
+  key: v4(),
+});
+
 export const isOwnerValue = atom<boolean>({
   key: v4(),
   default: false,
