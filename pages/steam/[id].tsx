@@ -11,8 +11,7 @@ import Favorite from "../../components/Favorite";
 import Modal from "../../components/Modal";
 import { RecoilState, useRecoilState, useSetRecoilState } from "recoil";
 import { isOwnerValue, tokenValue, userID } from "../../store/user.store";
-import * as fs from "fs";
-import * as https from "https";
+import { cookieStringToObject } from "../../lib/cookie-parse";
 
 axios.defaults.withCredentials = true;
 
@@ -50,8 +49,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // const httpsAgent = new https.Agent({
   //   rejectUnauthorized: false,
   // });
-  const token = getCookie("Authorization", context);
-  axios.defaults.headers.common["Authorization"] = token;
+  const cookie = context.req.headers.cookie;
+  const token = cookieStringToObject(cookie);
+
+  const { Authorization, User } = token;
+
+  axios.defaults.headers.common["Authorization"] =
+    "Bearer " + Authorization.split("%")[1].slice(2);
 
   const { id } = context.query;
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -60,6 +64,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const fetchedData = await axios.post(
       `${process.env.API_URL}/steam/profile/${id}`
     );
+
     const userData = await axios.post(`${process.env.API_URL}/user/id/${id}`);
     const libraryData = await axios.get(
       `${process.env.API_URL}/game/user/${id}`
@@ -73,7 +78,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           image: resData.profile.avatar.large,
         },
         appList: libraryData.data,
-        token: token,
+
+        token: Authorization.split("%")[1].slice(2),
       },
     };
   } catch (error) {
@@ -92,10 +98,8 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
   setTokenValue(token ? token : "");
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   const router = useRouter();
-  // const token = getCookie("Auth");
-  const { id } = router.query;
 
-  console.log(profile, token);
+  const { id } = router.query;
 
   const [desc, setDesc] = useState(profile.description);
   const [descMod, setDescMod] = useState();
