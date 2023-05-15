@@ -21,7 +21,7 @@ const Trait = () => {
   };
 
   const getData = async () => {
-    const traits = await axios.post(`/api/trait/user/${id}`);
+    const traits = await axios.post(`/API/trait/user/${id}`);
     traits.status === 201 && setData(traits.data);
   };
   useEffect(() => {
@@ -33,7 +33,7 @@ const Trait = () => {
     // e.preventDefault();
     const token = getCookie("Auth");
     axios.defaults.headers.common["Authorization"] = token;
-    const fetch = await axios.put("/api/trait/update", {
+    const fetch = await axios.put("/API/trait/update", {
       c_trait: emptyList,
       u_trait: data,
       d_trait: trash,

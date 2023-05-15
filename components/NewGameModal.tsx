@@ -28,7 +28,7 @@ const NewGameModal = ({ showModal, setShowModal }) => {
       const token = getCookie("Auth");
       axios.defaults.headers.common["Authorization"] = token;
 
-      const fetchedData = await axios.post(`/api/steam/profile/${userid}`);
+      const fetchedData = await axios.post(`/API/steam/profile/${userid}`);
       const resData: appData[] = fetchedData.data.appList;
       setGames(
         resData.sort((a, b) =>
@@ -51,7 +51,7 @@ const NewGameModal = ({ showModal, setShowModal }) => {
     const token = getCookie("Auth");
     axios.defaults.headers.common["Authorization"] = token;
 
-    const fetch = await axios.post(`/api/game/new`, {
+    const fetch = await axios.post(`/API/game/new`, {
       gameID: game.appID,
       title: game.name,
       platform: platform,

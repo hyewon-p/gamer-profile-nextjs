@@ -10,7 +10,7 @@ const Favorite: React.FC<{ library: any }> = ({ library }) => {
   const { id } = router.query;
   const isOwner = useRecoilValue(isOwnerValue);
   const getFavoriteGames = async () => {
-    const fetch = await axios.get(`/api/favorite/user/${id}`);
+    const fetch = await axios.get(`/API/favorite/user/${id}`);
     setGameList(fetch.data);
     return;
   };
