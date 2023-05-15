@@ -156,7 +156,7 @@ const Trait = () => {
                   </div>
                   <TextareaAutosize
                     required
-                    placeholder="좋아하는 장르"
+                    placeholder="ex) 좋아하는 장르"
                     onChange={(e) => {
                       let newArr = [...emptyList];
                       newArr[i] = { ...newArr[i], label: e.target.value };
@@ -168,7 +168,7 @@ const Trait = () => {
                 <td width="75%" className="border-blue-400 border-b leading-3">
                   <TextareaAutosize
                     required
-                    placeholder="RPG"
+                    placeholder="ex) RPG"
                     onChange={(e) => {
                       let newArr = [...emptyList];
                       newArr[i] = { ...newArr[i], value: e.target.value };
