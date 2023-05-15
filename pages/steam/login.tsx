@@ -3,11 +3,13 @@ import { getCookieParser } from "next/dist/server/api-utils";
 import Link from "next/link";
 import React from "react";
 import Layout from "../../components/Layout";
+import { setCookie } from "cookies-next";
 
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 
 // };
 const loginPage: NextPage = () => {
+  setCookie("token", "234");
   return (
     <Layout isUser={true}>
       <div className="w-full h-[80vh] flex justify-center items-center">

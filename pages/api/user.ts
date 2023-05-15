@@ -11,7 +11,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   const { token, id } = req.query;
-  setCookie("Token", token, { domain: "/" });
+  setCookie("token", token, { req, res });
+  // res.setHeader(
+  //   "Set-Cookie",
+  //   ("token",
+  //   token,
+  //   {
+  //     path: "/",
+  //     sameSite: "lax",
+  //   })
+  // );
   console.log(token, id);
 
   axios.defaults.headers.common["Authorization"] = token;
