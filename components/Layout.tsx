@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import { getCookieParser } from "next/dist/server/api-utils";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { getCookie } from "cookies-next";
@@ -14,7 +14,11 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ isUser = false, children }) => {
   axios.defaults.withCredentials = true;
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-  const isVerified = getCookie("User") || isUser;
+  const [isVerified, setIsVerified] = useState(false);
+  useEffect(() => {
+    const cookie = getCookie("User");
+    setIsVerified(!!cookie || isUser);
+  }, []);
 
   return (
     <div className="w-full flex flex-col items-center bg-black min-h-screen text-white">

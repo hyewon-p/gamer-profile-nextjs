@@ -9,7 +9,12 @@ import Trait from "../../components/Trait";
 import { useRouter } from "next/router";
 import Favorite from "../../components/Favorite";
 import Modal from "../../components/Modal";
-import { RecoilState, useRecoilState, useSetRecoilState } from "recoil";
+import {
+  RecoilState,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from "recoil";
 import { isOwnerValue, tokenValue, userID } from "../../store/user.store";
 
 axios.defaults.withCredentials = true;
@@ -54,16 +59,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   try {
-    const fetchedData = await axios.post(
-      `${process.env.API_URL}/steam/profile/${id}`
-    );
-
-    const resData =
-      fetchedData.status == 201
-        ? fetchedData.data
-        : { profile: { url: "", image: "" } };
-
     const userData = await axios.post(`${process.env.API_URL}/user/id/${id}`);
+    let resData = { profile: { url: "", avatar: { large: "" } } };
+    if (userData.data.steamKey) {
+      const fetchedData = await axios.post(
+        `${process.env.API_URL}/steam/profile/${id}`
+      );
+      resData = fetchedData.data;
+    }
+
     const libraryData = await axios.get(
       `${process.env.API_URL}/game/user/${id}`
     );
@@ -72,10 +76,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: {
         profile: {
           ...userData.data,
-          url: resData.profile?.url,
+          url: resData.profile.url,
           image: resData.profile.avatar?.large,
         },
         appList: libraryData.data,
+        // appList: [],
 
         token: token,
       },
@@ -94,23 +99,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
   // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   const router = useRouter();
+  const [isOwner, setIsOwner] = useRecoilState(isOwnerValue);
+
+  // console.log(appList, profile, token);
 
   const { id } = router.query;
   const userID = getCookie("User");
-
-  const [desc, setDesc] = useState(profile.description);
-  const [descMod, setDescMod] = useState();
-  const [isOwner, setIsOwner] = useRecoilState(isOwnerValue);
-
-  const fetch = async () => {
-    const fetchedData = await axios.post(
-      `${process.env.API_URL}/steam/profile/${id}`
-    );
-    return fetchedData;
-  };
   useEffect(() => {
     setIsOwner(id == userID);
+    console.log(id, userID, isOwner);
   }, []);
+
+  const [desc, setDesc] = useState(profile.description);
+  const [descMod, setDescMod] = useState(false);
+
+  // const fetch = async () => {
+  //   const fetchedData = await axios.post(
+  //     `${process.env.API_URL}/steam/profile/${id}`
+  //   );
+  //   return fetchedData;
+  // };
 
   const saveDesc = async () => {
     if (desc != profile.description) {
@@ -133,6 +141,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
                 className="h-[7.5rem] w-[7.5rem] rounded border border-blue-400"
                 src={profile.image}
               />
+
               <div className="flex flex-col grow h-full">
                 <div className="flex items-center">
                   <div className="py-2 text-lg font-medium">
@@ -212,6 +221,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
 
               <div className="rounded border border-blue-400 w-full h-full"></div>
             </div>
+
             <div className="flex gap-4">
               <div className="grow">
                 <Trait />

@@ -16,15 +16,25 @@ interface appData {
 
 const NewGameModal = ({ showModal, setShowModal }) => {
   const [platform, setPlatform] = useState<number>(0);
-  const platforms = ["직접 입력", "Steam", "Nintendo", "Playstation", "Mobile"];
-  const userid = useRecoilValue(userID);
+  const [platforms, setPlatforms] = useState(["직접 입력"]);
+  const userid = getCookie("User");
   const [games, setGames] = useState<appData[]>([]);
   const [game, setGame] = useState<appData>({});
+
+  const getPlatformData = async () => {
+    const user = await axios.post(`${process.env.API_URL}/user/id/${userid}`);
+    setPlatforms(
+      [...platforms, user.data.steamKey].filter((key) => key != null)
+    );
+  };
+  useEffect(() => {
+    getPlatformData;
+  }, []);
   // const [showModal, setShowModal] = useState(false);
 
   const getAppData = async (e: any) => {
     setPlatform(e.target.value);
-    if (e.target.value != 0) {
+    if (e.target.value == 1) {
       const token = getCookie("Auth");
       axios.defaults.headers.common["Authorization"] = token;
 
