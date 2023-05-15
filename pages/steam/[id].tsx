@@ -51,24 +51,29 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   axios.defaults.headers.common["Authorization"] = token;
 
   const { id } = context.query;
-  // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   try {
     const fetchedData = await axios.post(
       `${process.env.API_URL}/steam/profile/${id}`
     );
 
+    const resData =
+      fetchedData.status == 201
+        ? fetchedData.data
+        : { profile: { url: "", image: "" } };
+
     const userData = await axios.post(`${process.env.API_URL}/user/id/${id}`);
     const libraryData = await axios.get(
       `${process.env.API_URL}/game/user/${id}`
     );
-    const resData = fetchedData.data;
+    // const resData = ;
     return {
       props: {
         profile: {
           ...userData.data,
-          url: resData.profile.url,
-          image: resData.profile.avatar.large,
+          url: resData.profile?.url,
+          image: resData.profile.avatar?.large,
         },
         appList: libraryData.data,
 
@@ -126,7 +131,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
             <div className="grid grid-cols-[7.5rem_3fr_1fr] items-center gap-4 mt-3 mb-8 h-[7.5rem]">
               <img
                 className="h-[7.5rem] w-[7.5rem] rounded border border-blue-400"
-                src={profile?.image}
+                src={profile.image}
               />
               <div className="flex flex-col grow h-full">
                 <div className="flex items-center">
@@ -137,7 +142,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
                   <div className="flexpr-1 items-center mt-1">
                     <div className="flex gap-2 items-center">
                       <div className="rounded-full h-6 w-6 bg-blue-600">
-                        <Link href={profile?.url}>
+                        <Link href={profile.url}>
                           <img
                             className="w-full hover:cursor-pointer"
                             src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg"
