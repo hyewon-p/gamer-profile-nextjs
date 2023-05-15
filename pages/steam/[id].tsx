@@ -104,10 +104,9 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
     );
     return fetchedData;
   };
-  // useEffect(() => {
-  //   console.log(fetch());
-  //   setIsOwner(id == profile.id);
-  // }, []);
+  useEffect(() => {
+    setIsOwner(id == profile.id);
+  }, []);
 
   const saveDesc = async () => {
     if (desc != profile.description) {
