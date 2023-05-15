@@ -49,11 +49,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // const httpsAgent = new https.Agent({
   //   rejectUnauthorized: false,
   // });
-  const token = getCookie("Authorization", context);
+  const token = getCookie("Auth", context);
   // const token = cookieStringToObject(cookie);
 
   // const { Authorization, User } = token;
-
+  axios.defaults.withCredentials = true;
   axios.defaults.headers.common["Authorization"] = token;
 
   const { id } = context.query;
