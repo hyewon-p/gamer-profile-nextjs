@@ -18,7 +18,7 @@ const Layout: React.FC<LayoutProps> = ({ isUser = false, children }) => {
 
   return (
     <div className="w-full flex flex-col items-center bg-black min-h-screen text-white">
-      <header className="flex justify-between w-4/6 max-w-[60vw] py-3">
+      <header className="flex justify-between w-4/6 py-3 max-w-[60vw] 2xl:max-w-[50vw]">
         <div></div>
         {!isVerified && (
           <Link href={"/steam/login"}>
@@ -26,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ isUser = false, children }) => {
           </Link>
         )}
       </header>
-      <div className="w-4/6 pb-8">{children}</div>
+      <div className="w-4/6 max-w-[60vw] 2xl:max-w-[50vw] pb-8">{children}</div>
     </div>
   );
 };
