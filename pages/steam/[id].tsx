@@ -95,8 +95,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // }
 };
 const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
-  const setTokenValue = useSetRecoilState(tokenValue);
-  setTokenValue(token ? token : "");
+  // const setTokenValue = useSetRecoilState(tokenValue);
+  // setTokenValue(token ? token : "");
   // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   console.log(token);
   const router = useRouter();
@@ -113,10 +113,10 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
     );
     return fetchedData;
   };
-  useEffect(() => {
-    console.log(fetch());
-    setIsOwner(id == profile.id);
-  }, []);
+  // useEffect(() => {
+  //   console.log(fetch());
+  //   setIsOwner(id == profile.id);
+  // }, []);
 
   const saveDesc = async () => {
     if (desc != profile.description) {

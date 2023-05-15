@@ -11,17 +11,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   const { token, id } = req.query;
-  setCookie("token", token, { req, res });
-  // res.setHeader(
-  //   "Set-Cookie",
-  //   ("token",
-  //   token,
-  //   {
-  //     path: "/",
-  //     sameSite: "lax",
-  //   })
-  // );
-  console.log(token, id);
+  setCookie("Auth", token, { req, res });
+  setCookie("User", id, { req, res });
+
+  // console.log(token, id);
 
   axios.defaults.headers.common["Authorization"] = token;
   res.writeHead(308, { Location: `/steam/${id}`, Token: token }).end();
