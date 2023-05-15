@@ -49,48 +49,50 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // const httpsAgent = new https.Agent({
   //   rejectUnauthorized: false,
   // });
-  const token = getCookie("Auth", context);
-  // const token = cookieStringToObject(cookie);
+  // const token = getCookie("Auth", context);
+  // // const token = cookieStringToObject(cookie);
 
-  // const { Authorization, User } = token;
-  axios.defaults.withCredentials = true;
-  axios.defaults.headers.common["Authorization"] = token;
+  // // const { Authorization, User } = token;
+  // axios.defaults.withCredentials = true;
+  // axios.defaults.headers.common["Authorization"] = token;
 
-  const { id } = context.query;
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  // const { id } = context.query;
+  // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-  try {
-    const fetchedData = await axios.post(
-      `${process.env.API_URL}/steam/profile/${id}`
-    );
+  // try {
+  //   const fetchedData = await axios.post(
+  //     `${process.env.API_URL}/steam/profile/${id}`
+  //   );
 
-    const userData = await axios.post(`${process.env.API_URL}/user/id/${id}`);
-    const libraryData = await axios.get(
-      `${process.env.API_URL}/game/user/${id}`
-    );
-    const resData = fetchedData.data;
-    return {
-      props: {
-        profile: {
-          ...userData.data,
-          url: resData.profile.url,
-          image: resData.profile.avatar.large,
-        },
-        appList: libraryData.data,
-
-        token: token,
+  //   const userData = await axios.post(`${process.env.API_URL}/user/id/${id}`);
+  //   const libraryData = await axios.get(
+  //     `${process.env.API_URL}/game/user/${id}`
+  //   );
+  //   const resData = fetchedData.data;
+  return {
+    props: {
+      profile: {
+        // ...userData.data,
+        // url: resData.profile.url,
+        // image: resData.profile.avatar.large,
       },
-    };
-  } catch (error) {
-    return {
-      props: {
-        redirect: {
-          destination: "/steam/login",
-          permanent: false,
-        },
-      },
-    };
-  }
+      appList: [],
+      // libraryData.data,
+
+      token: "",
+      // token,
+    },
+  };
+  // } catch (error) {
+  // return {
+  //   props: {
+  //     redirect: {
+  //       destination: "/steam/login",
+  //       permanent: false,
+  //     },
+  //   },
+  // };
+  // }
 };
 const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
   const setTokenValue = useSetRecoilState(tokenValue);
@@ -105,7 +107,14 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
   const [descMod, setDescMod] = useState();
   const [isOwner, setIsOwner] = useRecoilState(isOwnerValue);
 
+  const fetch = async () => {
+    const fetchedData = await axios.post(
+      `${process.env.API_URL}/steam/profile/${id}`
+    );
+    return fetchedData;
+  };
   useEffect(() => {
+    console.log(fetch());
     setIsOwner(id == profile.id);
   }, []);
 
