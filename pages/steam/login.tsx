@@ -20,9 +20,9 @@ const loginPage: NextPage = () => {
               src="https://community.akamai.steamstatic.com/public/images/signinthroughsteam/sits_01.png"
             />
           </Link>
-          <Link href={"/API/auth/google"}>
+          {/* <Link href={"/API/auth/google"}>
             <div className="rounded border px-3 py-4">Sign in with Google</div>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </Layout>

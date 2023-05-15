@@ -144,7 +144,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
                           />
                         </Link>
                       </div>
-                      <div className="rounded-full overflow-hidden h-6 w-6 bg-red-600">
+                      {/* <div className="rounded-full overflow-hidden h-6 w-6 bg-red-600">
                         <Link href={profile?.url}>
                           <img
                             className="w-full hover:cursor-pointer"
@@ -159,7 +159,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
                             src="https://cdn-icons-png.flaticon.com/512/37/37812.png?w=360"
                           />
                         </Link>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
