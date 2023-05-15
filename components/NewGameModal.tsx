@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { userID } from "../store/user.store";
 import FormModal from "./FormModal";
+import { v4 } from "uuid";
 
 interface appData {
   name: string;
@@ -16,25 +17,25 @@ interface appData {
 
 const NewGameModal = ({ showModal, setShowModal }) => {
   const [platform, setPlatform] = useState<number>(0);
-  const [platforms, setPlatforms] = useState(["직접 입력"]);
+  const [platforms, setPlatforms] = useState(["직접 입력", "STEAM"]);
   const userid = getCookie("User");
   const [games, setGames] = useState<appData[]>([]);
   const [game, setGame] = useState<appData>({});
 
-  const getPlatformData = async () => {
-    const user = await axios.post(`${process.env.API_URL}/user/id/${userid}`);
-    setPlatforms(
-      [...platforms, user.data.steamKey].filter((key) => key != null)
-    );
-  };
-  useEffect(() => {
-    getPlatformData;
-  }, []);
+  // const getPlatformData = async () => {
+  //   const user = await axios.post(`${process.env.API_URL}/user/id/${userid}`);
+  //   setPlatforms(
+  //     [...platforms, user.data.steamKey].filter((key) => key != null)
+  //   );
+  // };
+  // useEffect(() => {
+  //   getPlatformData;
+  // }, []);
   // const [showModal, setShowModal] = useState(false);
 
   const getAppData = async (e: any) => {
     setPlatform(e.target.value);
-    if (e.target.value == 1) {
+    if (e.target.value != 0) {
       const token = getCookie("Auth");
       axios.defaults.headers.common["Authorization"] = token;
 
@@ -56,11 +57,29 @@ const NewGameModal = ({ showModal, setShowModal }) => {
     }
   }, [showModal]);
 
+  const setAppID = async () => {
+    const gameList = await axios.get(`/API/game/gamelist`);
+    let num = Math.floor(Math.random() * 1000);
+    while (gameList.data.includes(num)) {
+      num = Math.floor(Math.random() * 1000);
+    }
+    setGame((prev) => ({
+      ...prev,
+      appID: num,
+      iconURL: "https://picsum.photos/200/300",
+    }));
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
     const token = getCookie("Auth");
     axios.defaults.headers.common["Authorization"] = token;
+    if (platform == 0) {
+      await setAppID();
+    }
 
+    console.log("form:", game);
     const fetch = await axios.post(`/API/game/new`, {
       gameID: game.appID,
       title: game.name,
@@ -114,7 +133,7 @@ const NewGameModal = ({ showModal, setShowModal }) => {
               onChange={(e) =>
                 setGame((prev) => ({
                   ...prev,
-                  title: e.target.value,
+                  name: e.target.value,
                 }))
               }
               required
