@@ -1,9 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { useRouter } from "next/router";
-import { useSetRecoilState } from "recoil";
-import { withSSRContext } from "aws-amplify";
-import { tokenValue } from "../../store/user.store";
-import { setAuthStorageServer } from "@nitric/amplify-secure-js";
 import axios from "axios";
 import { setCookie } from "cookies-next";
 
