@@ -9,7 +9,6 @@ import { setCookie } from "cookies-next";
 
 // };
 const loginPage: NextPage = () => {
-  setCookie("token", "234");
   return (
     <Layout isUser={true}>
       <div className="w-full h-[80vh] flex justify-center items-center">

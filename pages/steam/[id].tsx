@@ -11,7 +11,6 @@ import Favorite from "../../components/Favorite";
 import Modal from "../../components/Modal";
 import { RecoilState, useRecoilState, useSetRecoilState } from "recoil";
 import { isOwnerValue, tokenValue, userID } from "../../store/user.store";
-import { cookieStringToObject } from "../../lib/cookie-parse";
 
 axios.defaults.withCredentials = true;
 
@@ -89,10 +88,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
   // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-  console.log(token);
   const router = useRouter();
 
   const { id } = router.query;
+  const userID = getCookie("User");
 
   const [desc, setDesc] = useState(profile.description);
   const [descMod, setDescMod] = useState();
@@ -105,7 +104,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
     return fetchedData;
   };
   useEffect(() => {
-    setIsOwner(id == profile.id);
+    setIsOwner(id == userID);
   }, []);
 
   const saveDesc = async () => {
@@ -120,7 +119,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
     setDescMod(!descMod);
   };
   return (
-    <Layout isUser={profile ? true : false}>
+    <Layout>
       <div>
         {profile ? (
           <>

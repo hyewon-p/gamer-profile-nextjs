@@ -4,22 +4,23 @@ import Link from "next/link";
 import React from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { getCookie } from "cookies-next";
 
 interface LayoutProps {
   children: React.ReactNode;
-  isUser: boolean;
+  isUser?: boolean;
 }
 
-const Layout: React.FC<LayoutProps> = ({ isUser, children }) => {
-  console.log(isUser);
+const Layout: React.FC<LayoutProps> = ({ isUser = false, children }) => {
   axios.defaults.withCredentials = true;
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  const isVerified = getCookie("User") || isUser;
 
   return (
     <div className="w-full flex flex-col items-center bg-black min-h-screen text-white">
       <header className="flex justify-between w-4/6 py-3">
         <div></div>
-        {!isUser && (
+        {!isVerified && (
           <Link href={"/steam/login"}>
             <div className="cursor-pointer">로그인</div>
           </Link>
