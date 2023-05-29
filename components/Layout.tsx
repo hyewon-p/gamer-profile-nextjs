@@ -38,14 +38,16 @@ const Layout: React.FC<LayoutProps> = ({ isUser = false, children }) => {
             <div className="cursor-pointer">로그인</div>
           </Link>
         ) : (
-          <button
-            onClick={async () => {
-              await router.push(`${userID}`);
-              router.reload();
-            }}
-          >
-            <div className="cursor-pointer ">내 프로필</div>
-          </button>
+          !router.asPath.includes("login") && (
+            <button
+              onClick={async () => {
+                await router.push(`${userID}`);
+                router.reload();
+              }}
+            >
+              <div className="cursor-pointer ">내 프로필</div>
+            </button>
+          )
         )}
       </header>
       <div className="w-4/6 max-w-[60vw] 2xl:max-w-[50vw] pb-8">{children}</div>

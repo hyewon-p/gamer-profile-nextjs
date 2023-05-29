@@ -22,7 +22,7 @@ const loginPage: NextPage = () => {
             />
           </Link>
           <Link href={"/API/auth/google"}>
-            <div className="rounded border px-3 py-4">Sign in with Google</div>
+            <img src="/btn_google_signin_light_normal_web.png" />
           </Link>
         </div>
       </div>

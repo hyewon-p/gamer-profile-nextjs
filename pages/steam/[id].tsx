@@ -50,7 +50,7 @@ interface steamData {
     description: string;
     image: string;
   };
-  token: string;
+  // token: string;
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -84,9 +84,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           image: resData.profile.avatar?.large,
         },
         appList: libraryData.data,
-        // appList: [],
-
-        token: token,
+        // token: token,
       },
     };
   } catch (error) {
@@ -100,7 +98,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 };
-const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
+const ProfilePage: NextPage<steamData> = ({ appList, profile }) => {
   const router = useRouter();
   const [isOwner, setIsOwner] = useRecoilState(isOwnerValue);
 

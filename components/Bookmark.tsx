@@ -4,7 +4,7 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRecoilValue } from "recoil";
-import { isOwnerValue } from "../store/user.store";
+import { isOwnerValue, userID } from "../store/user.store";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 
@@ -26,26 +26,32 @@ const Bookmark = () => {
       );
   }, [data]);
   const clickHandler = async () => {
-    if (isOwner) {
-      setShowModal(true);
+    if (!id) {
+      router.push("login");
     } else {
-      const token = getCookie("Auth");
-
-      axios.defaults.withCredentials = true;
-      axios.defaults.headers.common["Authorization"] = token;
-
-      if (data.map((d) => d.profile_id.toString()).includes(router.query.id)) {
-        const fetch = await axios.delete(
-          `${process.env.API_URL}/bookmark/delete/${router.query.id}`
-        );
-        fetch.status == 200 && toast("북마크에서 삭제되었습니다.");
+      if (isOwner) {
+        setShowModal(true);
       } else {
-        const fetch = await axios.post(
-          `${process.env.API_URL}/bookmark/new/${router.query.id}`
-        );
-        fetch.status == 201 && toast("북마크에 추가되었습니다.");
+        const token = getCookie("Auth");
+
+        axios.defaults.withCredentials = true;
+        axios.defaults.headers.common["Authorization"] = token;
+
+        if (
+          data.map((d) => d.profile_id.toString()).includes(router.query.id)
+        ) {
+          const fetch = await axios.delete(
+            `${process.env.API_URL}/bookmark/delete/${router.query.id}`
+          );
+          fetch.status == 200 && toast("북마크에서 삭제되었습니다.");
+        } else {
+          const fetch = await axios.post(
+            `${process.env.API_URL}/bookmark/new/${router.query.id}`
+          );
+          fetch.status == 201 && toast("북마크에 추가되었습니다.");
+        }
+        getData();
       }
-      getData();
     }
   };
   useEffect(() => {

@@ -5,6 +5,8 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+import { isOwnerValue } from "../store/user.store";
+import { useRecoilValue } from "recoil";
 
 const Character: React.FC<{ userType: string }> = ({ userType }) => {
   const [showModal, setShowModal] = useState(false);
@@ -13,6 +15,7 @@ const Character: React.FC<{ userType: string }> = ({ userType }) => {
   );
   const [inputValue, setInputValue] = useState("");
   const router = useRouter();
+  const isOwner = useRecoilValue(isOwnerValue);
   const submitHandler = async (e) => {
     e.preventDefault();
     const token = getCookie("Auth");
@@ -67,12 +70,14 @@ const Character: React.FC<{ userType: string }> = ({ userType }) => {
           </div>
         </div>
         <div className="grow"></div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="text-sm text-blue-400"
-        >
-          수정
-        </button>
+        {isOwner && (
+          <button
+            onClick={() => setShowModal(true)}
+            className="text-sm text-blue-400"
+          >
+            수정
+          </button>
+        )}
       </div>
 
       <div className="flex gap-1 px-2 pt-2 w-full flex-wrap grow-0 overflow-hidden">

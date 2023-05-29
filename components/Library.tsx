@@ -70,7 +70,9 @@ const Library: React.FC<{ appList: gameInfo[] }> = ({ appList }) => {
               key={p.gameID}
               className="group relative p-1 grid gap-2 rounded w-full grid-cols-[1rem_1fr] items-center text-start hover:bg-slate-400/50"
             >
-              <img src={p.image} />
+              <div className="bg-slate-400 rounded w-[1rem] h-[1rem] overflow-hidden">
+                <img className="object-cover w-full h-full" src={p.image} />
+              </div>
 
               <div className="text-sm truncate">{p.title}</div>
             </button>
@@ -86,7 +88,12 @@ const Library: React.FC<{ appList: gameInfo[] }> = ({ appList }) => {
         ) : (
           <div>
             <div className="flex mb-3 items-center">
-              <img className="rounded" src={selectedGame.image} />
+              <div className="bg-slate-400 rounded w-6 h-6 overflow-hidden">
+                <img
+                  className="object-cover w-full h-full"
+                  src={selectedGame.image}
+                />
+              </div>
               <span className="grow text-lg font-medium mx-1">
                 {selectedGame.title}
               </span>

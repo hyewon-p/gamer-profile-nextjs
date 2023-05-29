@@ -17,7 +17,7 @@ interface appData {
 }
 
 const NewGameModal = ({ showModal, setShowModal }) => {
-  const [platform, setPlatform] = useState<number>(0);
+  const [platform, setPlatform] = useState<string>("직접 입력");
   const [platforms, setPlatforms] = useState(["직접 입력"]);
   const userid = getCookie("User");
   const [games, setGames] = useState<appData[]>([]);
@@ -60,7 +60,7 @@ const NewGameModal = ({ showModal, setShowModal }) => {
 
   useEffect(() => {
     if (!showModal) {
-      setPlatform(0);
+      setPlatform("직접 입력");
       setGame({});
       setGames([]);
     } else {
@@ -74,11 +74,8 @@ const NewGameModal = ({ showModal, setShowModal }) => {
     while (gameList.data.includes(num)) {
       num = Math.floor(Math.random() * 1000);
     }
-    setGame((prev) => ({
-      ...prev,
-      appID: num,
-      iconURL: "https://picsum.photos/200/300",
-    }));
+
+    return num;
   };
 
   const handleSubmit = async (e: any) => {
@@ -86,12 +83,13 @@ const NewGameModal = ({ showModal, setShowModal }) => {
 
     const token = getCookie("Auth");
     axios.defaults.headers.common["Authorization"] = token;
-    if (platform == 0) {
-      await setAppID();
+    let gameID;
+    if (platform == "직접 입력") {
+      gameID = await setAppID();
     }
 
     const fetch = await axios.post(`/API/game/new`, {
-      gameID: game.appID,
+      gameID: game.appID ? game.appID : gameID,
       title: game.name,
       platform: platform,
       playtime: Number(game.playTime),
@@ -151,6 +149,31 @@ const NewGameModal = ({ showModal, setShowModal }) => {
             />
           )}
         </label>
+        {platform == "직접 입력" && (
+          <label className="w-full font-medium">
+            게임 아이콘 url
+            <span className="w-2/3 float-right flex font-normal text-base">
+              <input
+                required
+                value={game.iconURL ? game.iconURL : ""}
+                onChange={(e) =>
+                  setGame((prev) => ({
+                    ...prev,
+                    iconURL: e.target.value,
+                  }))
+                }
+                className="rounded text-black text-end px-2 mr-2 grow"
+              />
+              <div className="w-6 h-6 bg-slate-400 rounded">
+                <img
+                  className="object-cover w-full h-full"
+                  src={game.iconURL}
+                />
+              </div>
+            </span>
+          </label>
+        )}
+
         <label className="w-full font-medium">
           플레이타임
           <span className="w-2/3 float-right flex font-normal text-base">
