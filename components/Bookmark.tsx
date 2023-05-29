@@ -94,19 +94,32 @@ const Bookmark = () => {
             <div>불러오는 중...</div>
           ) : (
             <div>
-              {data.map((userData) => (
-                <div key={userData.profile_id}>
-                  <span>{userData.user.username}</span>
+              <div className="border-2 rounded-lg p-2">
+                아래의 url을 복사하여 프로필을 공유해보세요.
+                <br />{" "}
+                <strong className="font-semibold">{`${process.env.BASE_URL}/steam/${id}`}</strong>
+              </div>
+              <div className="px-2 text-lg font-medium mt-2">북마크 목록</div>
+              <div className="flex flex-col gap-1">
+                {data.map((userData) => (
                   <button
+                    key={userData.profile_id}
                     onClick={async () => {
                       await router.push(`${userData.profile_id}`);
                       router.reload();
                     }}
+                    className="flex w-full px-3 py-1 mt-1 items-center"
                   >
-                    이동
+                    <div className="w-3 h-3 border rounded-md bg-blue-400 border-blue-400  mr-2">
+                      {/* <img
+                        className="w-full h-full"
+                        src=""
+                      /> */}
+                    </div>
+                    <span>{userData.user.username}</span>
                   </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>

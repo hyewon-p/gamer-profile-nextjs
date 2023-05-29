@@ -48,6 +48,7 @@ interface steamData {
     username: string;
     url: string;
     description: string;
+    image: string;
   };
   token: string;
 }
@@ -131,10 +132,16 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
         {profile ? (
           <>
             <div className="grid grid-cols-[7.5rem_3fr_1fr] items-center gap-4 mb-8 h-[7.5rem]">
-              <img
-                className="h-[7.5rem] w-[7.5rem] rounded border border-blue-400"
-                src={profile.image}
-              />
+              {profile.image ? (
+                <img
+                  className="h-[7.5rem] w-[7.5rem] rounded border border-blue-400"
+                  src={profile.image}
+                />
+              ) : (
+                <div className="h-[7.5rem] w-[7.5rem] border border-blue-400 rounded flex items-center p-6">
+                  <img className="invert" src={"/gamer.png"} />
+                </div>
+              )}
 
               <div className="flex flex-col grow h-full">
                 <div className="flex items-center">
