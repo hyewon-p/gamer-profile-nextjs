@@ -91,9 +91,12 @@ const NewComponent: React.FC<{
     <form className="w-full" onSubmit={createFavorite}>
       <div className="relative w-full border-blue-400 border rounded py-3 px-5 min-h-[10rem] text-blue-400 flex flex-col ">
         <div className="flex items-center gap-1">
-          <div className="bg-blue-400 w-5 h-5 rounded overflow-hidden">
+          <div className="bg-slate-400 w-5 h-5 rounded overflow-hidden">
             {gameInfo?.image && (
-              <img src={gameInfo?.image} width={"100%"} height={"100%"} />
+              <img
+                src={gameInfo?.image}
+                className="w-full h-full object-cover"
+              />
             )}
           </div>
 
@@ -177,9 +180,9 @@ const FavoriteComponent = ({ gameInfo, setList, isOwner }) => {
   return (
     <div className="relative w-full border-blue-400 border rounded py-3 px-5 min-h-[10rem] text-blue-400 flex flex-col ">
       <div className="flex items-center gap-1">
-        <div className="bg-blue-400 w-5 h-5 rounded overflow-hidden">
+        <div className="bg-slate-400 w-5 h-5 rounded overflow-hidden">
           {game.image && (
-            <img src={game.image} width={"100%"} height={"100%"} />
+            <img src={game.image} className="object-cover w-full h-full" />
           )}
         </div>
 
