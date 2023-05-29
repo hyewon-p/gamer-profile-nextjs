@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  // reactStrictMode: true,
   basePath: "/gamer-profile",
 };
 
 module.exports = {
-  reactStrictMode: true,
+  // reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: true,
   },

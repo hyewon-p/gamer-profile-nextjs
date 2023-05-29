@@ -1,6 +1,6 @@
 import { GetServerSideProps, GetStaticPaths, NextPage } from "next";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Layout from "../../components/Layout";
 import axios from "axios";
 import { getCookie } from "cookies-next";
@@ -16,6 +16,9 @@ import {
   useSetRecoilState,
 } from "recoil";
 import { isOwnerValue, tokenValue, userID } from "../../store/user.store";
+import Character from "../../components/Character";
+import Bookmark from "../../components/Bookmark";
+import { toast } from "react-toastify";
 
 axios.defaults.withCredentials = true;
 
@@ -97,28 +100,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 };
 const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
-  // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   const router = useRouter();
   const [isOwner, setIsOwner] = useRecoilState(isOwnerValue);
-
-  // console.log(appList, profile, token);
 
   const { id } = router.query;
   const userID = getCookie("User");
   useEffect(() => {
     setIsOwner(id == userID);
-    console.log(id, userID, isOwner);
+    // setDesc(profile.description);
   }, []);
 
   const [desc, setDesc] = useState(profile.description);
-  const [descMod, setDescMod] = useState(false);
 
-  // const fetch = async () => {
-  //   const fetchedData = await axios.post(
-  //     `${process.env.API_URL}/steam/profile/${id}`
-  //   );
-  //   return fetchedData;
-  // };
+  const [showModal, setShowModal] = useState(false);
 
   const saveDesc = async () => {
     if (desc != profile.description) {
@@ -127,16 +121,16 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
       const update = await axios.post("/API/user/desc", {
         desc: desc,
       });
-      update.status !== 201 && console.error(update.status);
+      update.status == 201 && toast("저장되었습니다.");
+      router.reload();
     }
-    setDescMod(!descMod);
   };
   return (
     <Layout>
       <div>
         {profile ? (
           <>
-            <div className="grid grid-cols-[7.5rem_3fr_1fr] items-center gap-4 mt-3 mb-8 h-[7.5rem]">
+            <div className="grid grid-cols-[7.5rem_3fr_1fr] items-center gap-4 mb-8 h-[7.5rem]">
               <img
                 className="h-[7.5rem] w-[7.5rem] rounded border border-blue-400"
                 src={profile.image}
@@ -165,15 +159,60 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
                             src="https://upload.wikimedia.org/wikipedia/commons/3/38/Nintendo_switch_logo.png"
                           />
                         </Link>
-                      </div>
+                      </div> */}
                       <div className="rounded-full h-6 w-6 bg-white">
-                        <Link href={profile?.url}>
+                        <button onClick={() => setShowModal(true)}>
                           <img
                             className="w-full hover:cursor-pointer"
                             src="https://cdn-icons-png.flaticon.com/512/37/37812.png?w=360"
                           />
-                        </Link>
-                      </div> */}
+                        </button>
+                        <Modal
+                          showModal={showModal}
+                          setShowModal={setShowModal}
+                        >
+                          <div>
+                            <div>
+                              <div>
+                                1. 아래의 링크를 클릭하여 플레이스테이션
+                                로그인을 진행합니다.
+                              </div>
+                              <a
+                                target="_blank"
+                                href="https://www.playstation.com/"
+                              >
+                                https://www.playstation.com/
+                              </a>
+                            </div>
+                            <div>
+                              <div>
+                                2. 로그인 후, 현재 페이지로 돌아와 아래의 링크를
+                                클릭하여 npsso 데이터를 복사하고 입력창에
+                                입력합니다.
+                              </div>
+                              <a
+                                className=""
+                                target="_blank"
+                                href="https://ca.account.sony.com/api/v1/ssocookie"
+                              >
+                                https://ca.account.sony.com/api/v1/ssocookie
+                              </a>
+                              <form
+                                onSubmit={async (e) => {
+                                  e.preventDefault();
+                                  await axios.patch("/API/user/ps/saveToken", {
+                                    npsso: e.target.npsso.value,
+                                  });
+                                }}
+                              >
+                                <input name="npsso" />
+                                <button role="submit">연동</button>
+                              </form>
+                            </div>
+                          </div>
+                        </Modal>
+                      </div>
+                      <Bookmark />
                     </div>
                   </div>
                 </div>
@@ -181,37 +220,24 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
                 <div className="relative grow ">
                   {isOwner && (
                     <button
-                      onClick={descMod ? saveDesc : () => setDescMod(true)}
+                      onClick={saveDesc}
                       className="absolute top-2 right-2 w-4 h-4"
                     >
-                      {descMod ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="100%"
-                          height="100%"
-                          viewBox="0 0 24 24"
-                          stroke="white"
-                          fill="white"
-                        >
-                          <path d="M15.003 3h2.997v5h-2.997v-5zm8.997 1v20h-24v-24h20l4 4zm-19 5h14v-7h-14v7zm16 4h-18v9h18v-9z" />
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="100%"
-                          height="100%"
-                          viewBox="0 0 24 24"
-                          stroke="white"
-                          fill="white"
-                        >
-                          <path d="M7.127 22.564l-7.126 1.436 1.438-7.125 5.688 5.689zm-4.274-7.104l5.688 5.689 15.46-15.46-5.689-5.689-15.459 15.46z" />
-                        </svg>
-                      )}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="100%"
+                        height="100%"
+                        viewBox="0 0 24 24"
+                        stroke="white"
+                        fill="white"
+                      >
+                        <path d="M15.003 3h2.997v5h-2.997v-5zm8.997 1v20h-24v-24h20l4 4zm-19 5h14v-7h-14v7zm16 4h-18v9h18v-9z" />
+                      </svg>
                     </button>
                   )}
 
                   <textarea
-                    disabled={!(descMod && isOwner)}
+                    disabled={!isOwner}
                     value={desc}
                     onChange={(v) => setDesc(v.target.value)}
                     className="bg-slate-500/50 rounded w-full h-full px-2 py-1"
@@ -219,7 +245,7 @@ const ProfilePage: NextPage<steamData> = ({ appList, profile, token }) => {
                 </div>
               </div>
 
-              <div className="rounded border border-blue-400 w-full h-full"></div>
+              <Character userType={profile.gamerType} />
             </div>
 
             <div className="flex gap-4">

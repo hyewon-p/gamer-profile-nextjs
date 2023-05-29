@@ -24,3 +24,6 @@ textarea {
   white-space: pre-wrap;
   word-break: keep-all;
 }
+.Toastify__toast {
+  border: 2px solid rgb(96 165 250);
+}

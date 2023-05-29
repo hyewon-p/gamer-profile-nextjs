@@ -4,6 +4,9 @@ import NewGameModal from "./NewGameModal";
 import FormModal from "./FormModal";
 import { useRecoilValue } from "recoil";
 import { isOwnerValue } from "../store/user.store";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 interface gameInfo {
   id: number;
@@ -16,7 +19,30 @@ interface gameInfo {
 
 const Library: React.FC<{ appList: gameInfo[] }> = ({ appList }) => {
   const [showModal, setShowModal] = useState(false);
+  const [showModifyModal, setShowModifyModal] = useState(false);
   const isOwner = useRecoilValue(isOwnerValue);
+  const [selectedGame, setSelectedGame] = useState<gameInfo | undefined>(
+    undefined
+  );
+  const router = useRouter();
+
+  const deleteGame = async () => {
+    if (selectedGame != undefined) {
+      const fetch = await axios.delete(
+        `${process.env.API_URL}/game/delete/${selectedGame.gameID}`
+      );
+      fetch.status == 200 && toast("삭제되었습니다.");
+    }
+
+    router.reload();
+
+    setShowModifyModal(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await axios.patch(`${process.env.API_URL}/game`);
+  };
 
   return (
     <div className="w-[30%]">
@@ -37,48 +63,80 @@ const Library: React.FC<{ appList: gameInfo[] }> = ({ appList }) => {
           .filter((_, i) => i < 100)
           .map((p: gameInfo) => (
             <button
+              onClick={() => {
+                setSelectedGame(p);
+                setShowModifyModal(true);
+              }}
               key={p.gameID}
               className="group relative p-1 grid gap-2 rounded w-full grid-cols-[1rem_1fr] items-center text-start hover:bg-slate-400/50"
             >
               <img src={p.image} />
 
               <div className="text-sm truncate">{p.title}</div>
-              {/* <div className="absolute right-1 top-0 h-full flex items-center opacity-0 group-hover:opacity-100 gap-1">
-                  <button className="w-3 h-3">
-                    <svg
-                      width="100%"
-                      height="100%"
-                      stroke-linejoin="round"
-                      stroke-miterlimit="2"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="hover:fill-red-600 fill-white"
-                    >
-                      <path
-                        d="m12 5.72c-2.624-4.517-10-3.198-10 2.461 0 3.725 4.345 7.727 9.303 12.54.194.189.446.283.697.283s.503-.094.697-.283c4.977-4.831 9.303-8.814 9.303-12.54 0-5.678-7.396-6.944-10-2.461z"
-                        fill-rule="nonzero"
-                      />
-                    </svg>
-                  </button>
-                  <button className="w-3 h-3">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="100%"
-                      height="100%"
-                      viewBox="0 0 24 24"
-                      className="hover:fill-red-100 fill-red-500 stroke-0"
-                    >
-                      <path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z" />
-                    </svg>
-                  </button>
-                </div> */}
             </button>
           ))}
       </div>
+      <FormModal
+        onSubmit={handleSubmit}
+        showModal={showModifyModal}
+        setShowModal={setShowModifyModal}
+      >
+        {selectedGame == undefined ? (
+          <div>게임 정보 가져오는 중...</div>
+        ) : (
+          <div>
+            <div className="flex mb-3 items-center">
+              <img className="rounded" src={selectedGame.image} />
+              <span className="grow text-lg font-medium mx-1">
+                {selectedGame.title}
+              </span>
+              <button
+                type="button"
+                onClick={deleteGame}
+                className="group hover:border border-white w-6 h-6 p-[0.3rem] bg-red-500 rounded"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="100%"
+                  height="100%"
+                  viewBox="0 0 24 24"
+                  className=" fill-white stroke-0"
+                >
+                  <path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z" />
+                </svg>
+              </button>
+            </div>
+            <label className="w-full font-medium">
+              플레이타임
+              <span className="w-2/3 float-right flex font-normal text-base">
+                <input
+                  required
+                  value={selectedGame.playtime ? selectedGame.playtime : ""}
+                  type="number"
+                  onChange={(e) =>
+                    setSelectedGame((prev: any) => ({
+                      ...prev,
+                      playtime: Number(e.target.value),
+                    }))
+                  }
+                  className="rounded text-black text-end px-2 mr-2 grow"
+                />
+                <span className="shrink-0 text-sm pt-1">
+                  {`분 ( ${
+                    selectedGame.playtime
+                      ? Math.trunc(selectedGame.playtime / 60)
+                      : 0
+                  } 시간 )`}
+                </span>
+              </span>
+            </label>
+          </div>
+        )}
+      </FormModal>
 
       <NewGameModal showModal={showModal} setShowModal={setShowModal} />
     </div>
   );
 };
 
-export default Library;
+export default React.memo(Library);

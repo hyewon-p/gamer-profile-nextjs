@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": " node server/server.js ",
+    "start": "next dev",
     "build": "next build",
     "lint": "next lint"
   },
@@ -15,6 +16,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-textarea-autosize": "^8.4.1",
+    "react-toastify": "^9.1.3",
     "recoil": "^0.7.7",
     "steamapi": "^2.2.0",
     "uuid": "^9.0.0"

@@ -37,13 +37,13 @@ const Modal: React.FC<{
                 </div>
                 {/*footer*/}
                 <div className="flex items-center justify-end p-3 border-t border-solid border-blue-300 rounded-b">
-                  <button
+                  {/* <button
                     className="text-red-500 background-transparent font-bold uppercase px-4 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
                     onClick={() => setShowModal(false)}
                   >
                     {close}
-                  </button>
+                  </button> */}
                   <button
                     className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-4 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"

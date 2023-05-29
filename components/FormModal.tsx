@@ -44,7 +44,7 @@ const FormModal: React.FC<{
                   {children}
                 </div>
                 {/*footer*/}
-                <div className="flex items-center justify-end p-3 border-t border-solid border-blue-300 rounded-b">
+                <div className="flex items-center justify-end p-3 border-t border-solid border-white rounded-b">
                   <button
                     className="text-red-500 background-transparent font-bold uppercase px-4 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"

@@ -5,6 +5,7 @@ import { useRecoilValue } from "recoil";
 import { userID } from "../store/user.store";
 import FormModal from "./FormModal";
 import { v4 } from "uuid";
+import { useRouter } from "next/router";
 
 interface appData {
   name: string;
@@ -17,30 +18,38 @@ interface appData {
 
 const NewGameModal = ({ showModal, setShowModal }) => {
   const [platform, setPlatform] = useState<number>(0);
-  const [platforms, setPlatforms] = useState(["직접 입력", "STEAM"]);
+  const [platforms, setPlatforms] = useState(["직접 입력"]);
   const userid = getCookie("User");
   const [games, setGames] = useState<appData[]>([]);
   const [game, setGame] = useState<appData>({});
+  const router = useRouter();
 
-  // const getPlatformData = async () => {
-  //   const user = await axios.post(`${process.env.API_URL}/user/id/${userid}`);
-  //   setPlatforms(
-  //     [...platforms, user.data.steamKey].filter((key) => key != null)
-  //   );
-  // };
-  // useEffect(() => {
-  //   getPlatformData;
-  // }, []);
-  // const [showModal, setShowModal] = useState(false);
+  const getPlatformData = async () => {
+    const user = await axios.post(`${process.env.API_URL}/user/id/${userid}`);
+
+    setPlatforms([
+      "직접 입력",
+      user.data.steamKey && "STEAM",
+      user.data.psToken && "PS",
+    ]);
+  };
 
   const getAppData = async (e: any) => {
     setPlatform(e.target.value);
-    if (e.target.value != 0) {
-      const token = getCookie("Auth");
-      axios.defaults.headers.common["Authorization"] = token;
-
+    const token = getCookie("Auth");
+    axios.defaults.headers.common["Authorization"] = token;
+    if (e.target.value == "STEAM") {
       const fetchedData = await axios.post(`/API/steam/profile/${userid}`);
       const resData: appData[] = fetchedData.data.appList;
+      setGames(
+        resData.sort((a, b) =>
+          a.name > b.name ? 1 : a.name === b.name ? 0 : -1
+        )
+      );
+    } else if (e.target.value == "PS") {
+      const fetchedData = await axios.get(`/API/user/ps/games`);
+      console.log(fetchedData.data.data.gameLibraryTitlesRetrieve.games);
+      const resData = fetchedData.data.data.gameLibraryTitlesRetrieve.games;
       setGames(
         resData.sort((a, b) =>
           a.name > b.name ? 1 : a.name === b.name ? 0 : -1
@@ -54,6 +63,8 @@ const NewGameModal = ({ showModal, setShowModal }) => {
       setPlatform(0);
       setGame({});
       setGames([]);
+    } else {
+      getPlatformData();
     }
   }, [showModal]);
 
@@ -79,7 +90,6 @@ const NewGameModal = ({ showModal, setShowModal }) => {
       await setAppID();
     }
 
-    console.log("form:", game);
     const fetch = await axios.post(`/API/game/new`, {
       gameID: game.appID,
       title: game.name,
@@ -90,6 +100,7 @@ const NewGameModal = ({ showModal, setShowModal }) => {
     if (fetch.status == 201) {
       setShowModal(false);
     }
+    router.replace(router.asPath);
   };
   return (
     <FormModal
@@ -106,7 +117,7 @@ const NewGameModal = ({ showModal, setShowModal }) => {
             onChange={(e) => getAppData(e)}
           >
             {platforms.map((p, i) => (
-              <option value={i} key={i}>
+              <option value={p} key={i}>
                 {p}
               </option>
             ))}
@@ -114,7 +125,7 @@ const NewGameModal = ({ showModal, setShowModal }) => {
         </label>
         <label className="w-full font-medium">
           게임
-          {games.length > 0 && platform != 0 ? (
+          {games.length > 0 && platform != "직접 입력" ? (
             <select
               className="rounded w-2/3 float-right truncate font-normal text-sm py-1"
               onChange={(e) => {

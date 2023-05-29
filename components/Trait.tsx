@@ -5,6 +5,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { useRecoilValue } from "recoil";
 import { isOwnerValue } from "../store/user.store";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 const Trait = () => {
   const token = getCookie("Auth");
@@ -39,6 +40,7 @@ const Trait = () => {
       d_trait: trash,
     });
     if (fetch.status == 200) {
+      toast("저장되었습니다.");
       return;
     } else {
       console.log(fetch);

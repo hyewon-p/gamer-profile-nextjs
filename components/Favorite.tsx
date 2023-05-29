@@ -3,6 +3,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { isOwnerValue } from "../store/user.store";
+import { v4 } from "uuid";
+import { ToastContainer, toast } from "react-toastify";
 
 const Favorite: React.FC<{ library: any }> = ({ library }) => {
   const [gameList, setGameList] = useState([]);
@@ -34,8 +36,8 @@ const Favorite: React.FC<{ library: any }> = ({ library }) => {
             <FavoriteComponent
               isOwner={isOwner}
               gameInfo={game}
+              key={v4()}
               setList={setGameList}
-              key={game.game_id}
             />
           ))}
         {emptyList.map((e, i) => (
@@ -65,7 +67,7 @@ const Favorite: React.FC<{ library: any }> = ({ library }) => {
   );
 };
 
-export default Favorite;
+export default React.memo(Favorite);
 
 const NewComponent: React.FC<{
   index: number;
@@ -78,7 +80,11 @@ const NewComponent: React.FC<{
     playtime: 0,
   });
   const createFavorite = async () => {
-    axios.post("/api/favorite/new", { gameID: gameInfo.id, description: desc });
+    const fetch = await axios.post("/api/favorite/new", {
+      gameID: gameInfo.id,
+      description: desc,
+    });
+    fetch.status == 201 && toast("저장되었습니다.");
   };
   const [desc, setDesc] = useState("");
   return (
@@ -100,7 +106,7 @@ const NewComponent: React.FC<{
             >
               {[{ title: "게임 선택", image: "", playtime: 0 }, ...library].map(
                 (game) => (
-                  <option value={game.id}>
+                  <option key={`favorite${game.id}`} value={game.id}>
                     {/* {console.log(game)} */}
                     {game.title}
                   </option>
@@ -163,6 +169,11 @@ const NewComponent: React.FC<{
 const FavoriteComponent = ({ gameInfo, setList, isOwner }) => {
   const [desc, setDesc] = useState(gameInfo.description);
   const { game } = gameInfo;
+  const deleteGame = async () => {
+    const fetch = await axios.delete(`/API/favorite/delete/${game.id}`);
+    fetch.status == 200 &&
+      setList((prev) => prev.filter((g) => g.game_id != game.id));
+  };
   return (
     <div className="relative w-full border-blue-400 border rounded py-3 px-5 min-h-[10rem] text-blue-400 flex flex-col ">
       <div className="flex items-center gap-1">
@@ -189,7 +200,17 @@ const FavoriteComponent = ({ gameInfo, setList, isOwner }) => {
       />
       {isOwner && (
         <div className="absolute left-[-2.2rem] top-1 flex flex-col gap-2">
-          <button className="group hover:bg-blue-400/50 border-blue-400 border rounded-full p-[0.35rem] w-7 h-7">
+          {/* <ToastContainer /> */}
+          <button
+            onClick={async () => {
+              await axios.put("/API/favorite/update", {
+                gameID: game.id,
+                description: desc,
+              });
+              toast("saved");
+            }}
+            className="group hover:bg-blue-400/50 border-blue-400 border rounded-full p-[0.35rem] w-7 h-7"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="100%"
@@ -201,9 +222,7 @@ const FavoriteComponent = ({ gameInfo, setList, isOwner }) => {
             </svg>
           </button>
           <button
-            onClick={() =>
-              setList((prev) => prev.filter((g) => g.id != game.id))
-            }
+            onClick={deleteGame}
             className="group hover:bg-red-500/50 border-red-600 border rounded-full p-[0.35rem] w-7 h-7"
           >
             <svg
